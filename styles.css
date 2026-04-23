@@ -614,16 +614,7 @@ body {
 .blank.wrong { border-color: var(--err); background: rgba(181,50,43,.1); }
 
 /* ============ EXERCISE 5 : DROPDOWN ============ */
-.drop-sentences { display: flex; flex-direction: column; gap: 14px; }
-.drop-sentence {
-  font-family: var(--font-display);
-  font-size: 1.1rem;
-  line-height: 1.8;
-  padding: 14px 18px;
-  background: var(--paper-warm);
-  border-radius: 10px;
-  border-left: 3px solid var(--ochre);
-}
+/* Layout handled by portrait card section below */
 .drop-select {
   display: inline-block;
   padding: 6px 30px 6px 12px;
@@ -739,16 +730,7 @@ body {
 
 /* ============ EXERCISE 8 : TRUE / FALSE ============ */
 .tf-list { display: flex; flex-direction: column; gap: 14px; }
-.tf-item {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 18px;
-  align-items: center;
-  padding: 16px 20px;
-  background: var(--paper-warm);
-  border: 1px solid var(--rule);
-  border-radius: var(--radius);
-}
+/* tf-item grid defined below in portrait section */
 .tf-statement {
   font-family: var(--font-display);
   font-size: 1.05rem;
@@ -954,8 +936,7 @@ body {
   .match-left .match-item { padding-right: 28px; }
   .match-right .match-item { padding-left: 28px; }
   .emoji-row { grid-template-columns: 1fr; text-align: center; }
-  .tf-item { grid-template-columns: 1fr; }
-  .tf-buttons { justify-content: center; }
+  /* tf-item responsive handled in portrait section */
   .big-grade { font-size: 4rem; }
   .info-grid { grid-template-columns: 1fr; }
   .actions { flex-direction: column; }
@@ -969,9 +950,128 @@ body {
   .ws-cell { font-size: 10px; }
 }
 
+/* ============ NO TEXT SELECT (global) ============ */
+body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+input, textarea, select {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* ============ EXERCISE 5 — PORTRAIT CARDS ============ */
+#dropSentences {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.drop-sentence {
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 20px;
+  align-items: center;
+  padding: 16px 20px;
+  background: var(--paper-warm);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  transition: box-shadow .2s;
+}
+.drop-sentence:hover { box-shadow: var(--shadow-sm); }
+.drop-portrait-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.drop-portrait {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 50%;
+  border: 3px solid var(--rule);
+  filter: grayscale(20%);
+  transition: filter .2s;
+  display: block;
+}
+.drop-sentence:hover .drop-portrait { filter: grayscale(0%); }
+.drop-portrait-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  text-align: center;
+}
+.drop-sentence-text {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+@media (max-width: 640px) {
+  .drop-sentence {
+    grid-template-columns: 70px 1fr;
+    gap: 14px;
+    padding: 12px 14px;
+  }
+  .drop-portrait { width: 60px; height: 60px; }
+  .drop-sentence-text { font-size: 1rem; }
+}
+
+/* ============ EXERCISE 8 — PORTRAIT IN TF ============ */
+.tf-item {
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 20px;
+  background: var(--paper-warm);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+}
+.tf-portrait-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tf-portrait {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 50%;
+  border: 2px solid var(--rule);
+  filter: grayscale(30%);
+  transition: filter .2s;
+}
+.tf-item:hover .tf-portrait { filter: grayscale(0%); }
+@media (max-width: 640px) {
+  .tf-item {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .tf-portrait-wrap { justify-content: center; }
+  .tf-buttons { justify-content: center; }
+}
+
+/* ============ EXERCISE 6 — HINT EMOJI STYLE ============ */
+.unscramble-hint {
+  font-size: .88rem;
+  color: var(--ink-mute);
+  font-style: italic;
+  text-align: center;
+  letter-spacing: .01em;
+}
+
 /* ============ PRINT ============ */
 @media print {
   .bg-deco, .actions, .site-footer, .progress-wrap, audio, .btn-ghost { display: none; }
-  body { background: #fff; }
+  body { background: #fff; -webkit-user-select: text; user-select: text; }
   .panel { break-inside: avoid; }
 }

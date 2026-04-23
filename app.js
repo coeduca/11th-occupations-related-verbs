@@ -52,15 +52,33 @@ const DROP_SENTENCES = [
 
 // Ex 6: Unscramble
 const UNSCRAMBLE = [
-  { id:"u1", scrambled: "T-S-I-N-E-I-S-C", answer: "scientist", hint: "Discovers things" },
-  { id:"u2", scrambled: "G-E-R-E-N-I-E-N", answer: "engineer", hint: "Designs machines & bridges" },
-  { id:"u3", scrambled: "S-A-U-N-A-T-R-O-T", answer: "astronaut", hint: "Travels to space" },
-  { id:"u4", scrambled: "T-R-A-I-S-T", answer: "artist", hint: "Paints & sculpts" },
-  { id:"u5", scrambled: "N-P-O-H-I-L-P-R-O-E-S-H", answer: "philosopher", hint: "Thinks about big questions" },
-  { id:"u6", scrambled: "I-A-U-N-C-M-I-S", answer: "musician", hint: "Plays instruments" },
+  { id:"u1", scrambled: "T-S-I-N-E-I-S-C", answer: "scientist", hint: "🔭 Observa el mundo con preguntas." },
+  { id:"u2", scrambled: "G-E-R-E-N-I-E-N", answer: "engineer", hint: "⚙️ Transforma ideas en estructuras." },
+  { id:"u3", scrambled: "S-A-U-N-A-T-R-O-T", answer: "astronaut", hint: "🌑 Va donde pocos han llegado." },
+  { id:"u4", scrambled: "T-R-A-I-S-T", answer: "artist", hint: "🖼️ Expresa lo invisible en formas." },
+  { id:"u5", scrambled: "N-P-O-H-I-L-P-R-O-E-S-H", answer: "philosopher", hint: "💭 Cuestiona lo que todos dan por hecho." },
+  { id:"u6", scrambled: "I-A-U-N-C-M-I-S", answer: "musician", hint: "🎵 El silencio también es su herramienta." },
 ];
 
-// Ex 7: Emoji stories (not auto-graded strictly)
+// Image map for famous people in Exercise 5
+const FAMOUS_IMAGES = {
+  "Einstein":    "files/alberteinstein.jpg",
+  "Frida Kahlo": "files/fridakahlo.jpg",
+  "Shakespeare": "files/shakespeare.jpg",
+  "Bell":        "files/AlexanderGraham.jpg",
+  "Jordan":      "files/micheljordan.jpg",
+  "Marie Curie": "files/mariecurie.jpg",
+};
+
+// Image map for Exercise 8 true/false
+const TF_IMAGES = {
+  "t1": "files/fridakahlo.jpg",
+  "t2": "files/alberteinstein.jpg",
+  "t3": "files/shakespeare.jpg",
+  "t4": "files/mariecurie.jpg",
+  "t5": "files/AlexanderGraham.jpg",
+  "t6": "files/micheljordan.jpg",
+};
 const EMOJI_ROWS = [
   { id:"e1", emoji:"🧑‍🔬 🔬", hint:"scientist + discovery" },
   { id:"e2", emoji:"🎨 🖼️", hint:"painter + artwork" },
@@ -644,8 +662,30 @@ function renderDropdowns() {
   const wrap = document.getElementById("dropSentences");
   wrap.innerHTML = "";
   DROP_SENTENCES.forEach(s => {
-    const p = document.createElement("div");
-    p.className = "drop-sentence";
+    const card = document.createElement("div");
+    card.className = "drop-sentence";
+
+    // Portrait image
+    const imgSrc = FAMOUS_IMAGES[s.famous];
+    if (imgSrc) {
+      const imgWrap = document.createElement("div");
+      imgWrap.className = "drop-portrait-wrap";
+      const img = document.createElement("img");
+      img.src = imgSrc;
+      img.alt = s.famous;
+      img.className = "drop-portrait";
+      img.onerror = () => { imgWrap.style.display = "none"; };
+      imgWrap.appendChild(img);
+      const label = document.createElement("span");
+      label.className = "drop-portrait-label";
+      label.textContent = s.famous;
+      imgWrap.appendChild(label);
+      card.appendChild(imgWrap);
+    }
+
+    // Sentence + select
+    const sentenceWrap = document.createElement("div");
+    sentenceWrap.className = "drop-sentence-text";
     const parts = s.text.split("_");
     const sel = document.createElement("select");
     sel.className = "drop-select";
@@ -669,10 +709,11 @@ function renderDropdowns() {
       sel.classList.toggle("correct", ok);
       sel.classList.toggle("wrong", !ok);
     }
-    p.appendChild(document.createTextNode(parts[0]));
-    p.appendChild(sel);
-    p.appendChild(document.createTextNode(parts[1] || ""));
-    wrap.appendChild(p);
+    sentenceWrap.appendChild(document.createTextNode(parts[0]));
+    sentenceWrap.appendChild(sel);
+    sentenceWrap.appendChild(document.createTextNode(parts[1] || ""));
+    card.appendChild(sentenceWrap);
+    wrap.appendChild(card);
   });
   updateDropdownScore();
 }
@@ -694,7 +735,7 @@ function renderUnscramble() {
     card.className = "unscramble-card";
     card.innerHTML = `
       <div class="unscramble-scram">${u.scrambled}</div>
-      <div class="unscramble-hint">Hint: ${u.hint}</div>
+      <div class="unscramble-hint">${u.hint}</div>
       <input type="text" class="unscramble-input" data-id="${u.id}" placeholder="Type the word…" autocomplete="off" spellcheck="false" />
     `;
     const inp = card.querySelector("input");
@@ -763,7 +804,9 @@ function renderTF() {
   TF_ITEMS.forEach(t => {
     const row = document.createElement("div");
     row.className = "tf-item";
+    const imgSrc = TF_IMAGES[t.id];
     row.innerHTML = `
+      ${imgSrc ? `<div class="tf-portrait-wrap"><img src="${imgSrc}" alt="" class="tf-portrait" onerror="this.parentElement.style.display='none'"></div>` : ""}
       <div class="tf-statement">${t.text}</div>
       <div class="tf-buttons">
         <button type="button" class="tf-btn" data-val="T" data-id="${t.id}">True</button>
@@ -1204,4 +1247,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Re-draw match lines on scroll (position shifts slightly on mobile)
   window.addEventListener("scroll", () => { drawMatchLines(); }, { passive: true });
+
+  // Prevent text selection, copy, right-click and translation
+  document.addEventListener("copy", e => e.preventDefault());
+  document.addEventListener("cut", e => e.preventDefault());
+  document.addEventListener("contextmenu", e => e.preventDefault());
+  document.addEventListener("selectstart", e => {
+    // Allow selection inside input/textarea
+    if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.tagName === "SELECT") return;
+    e.preventDefault();
+  });
+  document.addEventListener("dragstart", e => {
+    // Only allow our custom draggable tokens
+    if (!e.target.classList.contains("token") && !e.target.classList.contains("ws-cell")) e.preventDefault();
+  });
 });
